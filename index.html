@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Management Tracker 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #181c27;
+  --surface2: #1e2333;
+  --border: #2a3047;
+  --accent: #4f7eff;
+  --accent2: #00d4aa;
+  --warn: #ffb547;
+  --danger: #ff5c5c;
+  --text: #e8ecf5;
+  --text2: #7b88a8;
+  --text3: #4a5570;
+  --rod: #4f7eff;
+  --sharifah: #a78bfa;
+  --fazlin: #00d4aa;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* LAYOUT */
+.shell { display:flex; min-height:100vh; }
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display:flex; flex-direction:column;
+  padding: 24px 0;
+  position: sticky; top:0; height:100vh;
+}
+.sidebar-logo {
+  padding: 0 20px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.sidebar-logo .logo-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.sidebar-logo h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 20px;
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding: 10px 20px;
+  color: var(--text2);
+  cursor:pointer;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(79,126,255,0.08); }
+.nav-icon { font-size:16px; }
+.agents-section { margin-top:auto; padding: 20px; border-top: 1px solid var(--border); }
+.agents-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:12px; }
+.agent-chip {
+  display:flex; align-items:center; gap:8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+.agent-dot { width:8px; height:8px; border-radius:50%; }
+
+/* MAIN */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; flex-wrap:wrap;
+}
+.topbar-left { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.topbar h1 { font-size: 18px; font-weight:700; color:var(--text); }
+
+.select-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 7px 12px;
+  cursor:pointer;
+  outline:none;
+  transition: border-color 0.15s;
+}
+.select-pill:focus { border-color: var(--accent); }
+.select-pill option { background: var(--surface2); }
+
+.btn {
+  padding: 8px 18px;
+  border:none; border-radius:8px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.15s;
+}
+.btn-accent { background:var(--accent); color:#fff; }
+.btn-accent:hover { background:#3d6ee8; transform:translateY(-1px); }
+.btn-ghost { background:var(--surface2); color:var(--text2); border:1px solid var(--border); }
+.btn-ghost:hover { color:var(--text); border-color:var(--text3); }
+.btn-success { background:var(--accent2); color:#0f1117; }
+.btn-success:hover { background:#00bfa0; transform:translateY(-1px); }
+
+.content { flex:1; padding: 28px 32px; overflow-y:auto; }
+
+/* STATS */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position:relative; overflow:hidden;
+}
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+}
+.stat-card.c1::before { background: var(--accent); }
+.stat-card.c2::before { background: var(--accent2); }
+.stat-card.c3::before { background: var(--warn); }
+.stat-card.c4::before { background: var(--sharifah); }
+.stat-label { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
+.stat-val { font-size:28px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.stat-sub { font-size:12px; color:var(--text2); }
+.progress-bar { width:100%; height:4px; background:var(--border); border-radius:2px; margin-top:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:2px; background:var(--accent); transition:width 0.5s ease; }
+
+/* TABS */
+.tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid var(--border); }
+.tab-btn {
+  padding:10px 20px;
+  background:none; border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600;
+  color:var(--text2); cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:all 0.15s;
+}
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+
+/* TABLE */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  background: var(--surface2);
+  color: var(--text3);
+  font-size:11px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  padding:12px 14px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+tbody td {
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  color:var(--text);
+  font-size:13px;
+}
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background: var(--surface2); }
+.agent-name { display:flex; align-items:center; gap:8px; font-weight:600; }
+.agent-dot-sm { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.tag {
+  display:inline-block;
+  padding:3px 10px; border-radius:20px;
+  font-size:11px; font-weight:700;
+}
+.tag-success { background:rgba(0,212,170,0.12); color:var(--accent2); }
+.tag-warn { background:rgba(255,181,71,0.12); color:var(--warn); }
+.tag-danger { background:rgba(255,92,92,0.12); color:var(--danger); }
+.tag-neutral { background:var(--surface2); color:var(--text2); }
+.mono { font-family:'DM Mono',monospace; font-size:12px; }
+.cell-long { max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.empty-state { text-align:center; padding:60px; color:var(--text3); font-size:14px; }
+
+/* MODAL */
+.modal-bg {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
+  z-index:100; align-items:center; justify-content:center;
+}
+.modal-bg.open { display:flex; }
+.modal {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px;
+  width:90%; max-width:640px;
+  max-height:90vh; overflow-y:auto;
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.modal-header h2 { font-size:18px; font-weight:700; }
+.close-btn { background:none; border:none; color:var(--text2); font-size:22px; cursor:pointer; line-height:1; }
+.close-btn:hover { color:var(--text); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-grid.full { grid-template-columns:1fr; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group label { font-size:12px; font-weight:700; letter-spacing:0.5px; color:var(--text2); text-transform:uppercase; }
+.form-input {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  padding:9px 12px; outline:none; width:100%;
+  transition:border-color 0.15s;
+}
+.form-input:focus { border-color:var(--accent); }
+textarea.form-input { resize:vertical; min-height:72px; }
+.section-divider { margin:24px 0 16px; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); display:flex; align-items:center; gap:12px; }
+.section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.modal-footer { display:flex; justify-content:flex-end; gap:12px; margin-top:28px; }
+
+/* DETAIL MODAL */
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 24px; margin-bottom:16px; }
+.detail-item label { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text3); display:block; margin-bottom:4px; }
+.detail-item span { font-size:14px; color:var(--text); }
+.detail-full { grid-column:1/-1; }
+.detail-block { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--text); line-height:1.6; }
+.persist-row { display:flex; gap:12px; margin-top:12px; }
+.persist-item { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px; text-align:center; }
+.persist-item .p-label { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--text3); text-transform:uppercase; margin-bottom:4px; }
+.persist-item .p-val { font-size:20px; font-weight:700; }
+
+@media(max-width:900px){
+  .sidebar { display:none; }
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .form-grid { grid-template-columns:1fr; }
+  .topbar { padding:12px 16px; }
+  .content { padding:16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-tag">AIA Team</div>
+      <h2>Activity Management Tracker</h2>
+    </div>
+    <div class="nav-label">Views</div>
+    <div class="nav-item active" onclick="setView('overview',this)"><span class="nav-icon">📊</span> Overview</div>
+    <div class="nav-item" onclick="setView('sales',this)"><span class="nav-icon">💼</span> Sales Activity</div>
+    <div class="nav-item" onclick="setView('pipeline',this)"><span class="nav-icon">🔄</span> Pipeline</div>
+    <div class="nav-item" onclick="setView('persistency',this)"><span class="nav-icon">📈</span> Persistency</div>
+
+    <div class="agents-section">
+      <div class="agents-label">Life Planners</div>
+      <div class="agent-chip"><div class="agent-dot" style="background:var(--rod)"></div>Rod</div>
+      <div class="agent-chip"><div class="agent-dot" style="background:var(--sharifah)"></div>Sharifah</div>
+      <div class="agent-chip"><div class="agent-dot" style="background:var(--fazlin)"></div>Fazlin</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>📋 Activity Management Tracker 2026</h1>
+        <select class="select-pill" id="monthSel" onchange="render()">
+          <option value="JAN">January</option>
+          <option value="FEB">February</option>
+          <option value="MAR">March</option>
+          <option value="APR">April</option>
+          <option value="MAY">May</option>
+          <option value="JUN">June</option>
+          <option value="JUL">July</option>
+          <option value="AUG">August</option>
+          <option value="SEP">September</option>
+          <option value="OCT">October</option>
+          <option value="NOV">November</option>
+          <option value="DEC">December</option>
+        </select>
+        <select class="select-pill" id="weekSel" onchange="render()">
+          <option value="1">Week 1</option>
+          <option value="2">Week 2</option>
+          <option value="3">Week 3</option>
+          <option value="4">Week 4</option>
+        </select>
+        <select class="select-pill" id="agentSel" onchange="render()">
+          <option value="">All Agents</option>
+          <option value="Rod">Rod</option>
+          <option value="Sharifah">Sharifah</option>
+          <option value="Fazlin">Fazlin</option>
+        </select>
+      </div>
+      <button class="btn btn-success" onclick="openNewEntry()">+ New Entry</button>
+    </div>
+
+    <div class="content" id="mainContent">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- NEW ENTRY MODAL -->
+<div class="modal-bg" id="entryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>New Weekly Entry</h2>
+      <button class="close-btn" onclick="closeModal('entryModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Agent *</label>
+        <select class="form-input" id="eAgent">
+          <option value="">Select…</option>
+          <option value="Rod">Rod</option>
+          <option value="Sharifah">Sharifah</option>
+          <option value="Fazlin">Fazlin</option>
+          <option value="__new">Other…</option>
+        </select>
+      </div>
+      <div class="form-group" id="newAgentWrap" style="display:none">
+        <label>New Agent Name</label>
+        <input class="form-input" id="eNewAgent" placeholder="Enter name">
+      </div>
+    </div>
+
+    <div class="section-divider">Sales Activity</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Follow Up Attempts</label>
+        <textarea class="form-input" id="eFollowUp" placeholder="e.g. Shakirah 444, Aznira corp plan"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Presented</label>
+        <textarea class="form-input" id="ePresented" placeholder="e.g. Yaso 3360, Harrish 3600"></textarea>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Pipeline (list with TPC values)</label>
+        <textarea class="form-input" id="ePipeline" placeholder="e.g. Yaso 3600, Harrish 3600, Zetty 2616"></textarea>
+      </div>
+      <div class="form-group">
+        <label>TPC Closed (RM)</label>
+        <input class="form-input" type="number" id="eTpcClosed" placeholder="0.00" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Cases Closed</label>
+        <input class="form-input" type="number" id="eCases" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label>Monthly Target (RM)</label>
+        <input class="form-input" type="number" id="eMonthlyTarget" placeholder="12000">
+      </div>
+      <div class="form-group">
+        <label>Yearly Target (RM)</label>
+        <input class="form-input" type="number" id="eYearlyTarget" placeholder="140000">
+      </div>
+      <div class="form-group">
+        <label>Last Sales Date</label>
+        <input class="form-input" type="date" id="eLastSales">
+      </div>
+      <div class="form-group">
+        <label>Monthly Rec. Target</label>
+        <input class="form-input" type="number" id="eMonthlyRec" placeholder="1" min="0">
+      </div>
+    </div>
+
+    <div class="section-divider">Persistency</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>D0 (%)</label>
+        <input class="form-input" type="number" id="eD0" placeholder="100" min="0" max="100" step="0.1">
+      </div>
+      <div class="form-group">
+        <label>D1 (%)</label>
+        <input class="form-input" type="number" id="eD1" placeholder="100" min="0" max="100" step="0.1">
+      </div>
+      <div class="form-group">
+        <label>D2 (%)</label>
+        <input class="form-input" type="number" id="eD2" placeholder="80" min="0" max="100" step="0.1">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('entryModal')">Cancel</button>
+      <button class="btn btn-success" onclick="saveEntry()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="detailTitle">Entry Detail</h2>
+      <button class="close-btn" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('detailModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
+<script>
+// ===================== FIREBASE CONFIG =====================
+// Replace the values below with your Firebase project settings.
+const firebaseConfig = {
+  apiKey: "AIzaSyDPZ5K6V88sIU6it6rzATgWV9OROIUx1ts",
+  authDomain: "activity-management-cfbf0.firebaseapp.com",
+  projectId: "activity-management-cfbf0",
+  storageBucket: "activity-management-cfbf0.firebasestorage.app",
+  messagingSenderId: "115596906326",
+  appId: "1:115596906326:web:be63ecbc91026290d650f7",
+  measurementId: "G-XWYCR6R9SD"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function loadRealtimeData() {
+  if (unsubscribeEntries) unsubscribeEntries();
+
+  unsubscribeEntries = db.collection('entries')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot((snapshot) => {
+      userEntries = {};
+
+      snapshot.forEach((doc) => {
+        const e = doc.data();
+        const month = e.month;
+        const week = String(e.week);
+
+        if (!userEntries[month]) userEntries[month] = {'1':[],'2':[],'3':[],'4':[]};
+        if (!userEntries[month][week]) userEntries[month][week] = [];
+        userEntries[month][week].push(e);
+      });
+
+      render();
+    }, (error) => {
+      console.error('Firestore error:', error);
+      alert('Unable to load live data. Check Firebase configuration.');
+    });
+}
+</script>
+
+<script>
+// ===================== HISTORICAL DATA FROM EXCEL =====================
+const HISTORICAL = {"JAN":{"1":[{"agent":"Rod","type":"SALES","followUp":"shakirah 444, Aznira coprate plan","presented":"Yaso 3360, Harrish 3600, Syahir 648, Sakunthaladevi 1044","pipeline":"Yaso 3360, Harrish 3600, Syahir 648, Sakunthaladevi 1044","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"24/12/2025","d0":100.0,"d1":100.0,"d2":80.0},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"Dayang family 8238 ANP","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"23/11/2025","d0":29.0,"d1":100.0,"d2":66.0},{"agent":"Fazlin","type":"SALES","followUp":"Shakirah 444, Aznira coprate plan","presented":"","pipeline":"Amira 4320,Jannah 1800 Faris 3600, Fazreen","tpcClosed":0,"casesClosed":2,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"30/12/2025","d0":95.0,"d1":89.0,"d2":85.0}],"2":[{"agent":"Rod","type":"SALES","followUp":"Zetty 2616, Nia Zakaria 3000","presented":"Harrish 3600 Zetty 2616, Nia Zakaria 3000","pipeline":"Yaso 3600, Harrish 3600, Zetty 2616","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":100.0,"d1":100.0,"d2":80.0},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"Dayang family 8238 ANP","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"23/11/2025","d0":69.0,"d1":100.0,"d2":66.0},{"agent":"Fazlin","type":"SALES","followUp":"Zaleha","presented":"Zaleha","pipeline":"Amira 4320,Jannah 1800 Faris 3600, Shakirah 433","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":95.0,"d1":89.0,"d2":85.0}],"3":[{"agent":"Rod","type":"SALES","followUp":"Mark, Lim Pei Shern,Raihana, Samman, Janice, Mahendra","presented":"Raihana (topup for herself & 2 kids), Mahendra","pipeline":"Yaso 3600, Harrish 3600,","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":100.0,"d1":100.0,"d2":80.0},{"agent":"Sharifah","type":"SALES","followUp":"Norlela's daughter and top up","presented":"","pipeline":"Dayang family 8238 ANP","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"23/11/2025","d0":69.0,"d1":100.0,"d2":66.0},{"agent":"Fazlin","type":"SALES","followUp":"Shakirah 433, Andrew","presented":"","pipeline":"Amira 4320,Jannah 1800 Faris 3600","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"30/12/2025","d0":95.0,"d1":88.62,"d2":84.64}],"4":[]},"FEB":{"1":[{"agent":"Rod","type":"SALES","followUp":"Suhaimi, Hasni, Nara","presented":"Hasni 2220, Nara 3240","pipeline":"Yaso 3600, Harrish 3600, Hasni 2220, Nara 3240, Hooi Mian 1116","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Omar Albar","presented":"ariana. norlela's client anak","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"23/11/2025","d0":69.0,"d1":100.0,"d2":66.0},{"agent":"Fazlin","type":"SALES","followUp":"Rizq","presented":"Rizq 2412","pipeline":"Amira 4320, Faris 3600 , Kamarul Azhan 4560","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":100.0,"d2":64.0}],"2":[{"agent":"Rod","type":"SALES","followUp":"Loreen, Kelvin","presented":"Loreen 2220, Kelvin 1872, Aaron 1740","pipeline":"Loreen 2220, Harish 3600, Yaso 3600","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"Loreen 2220, Kelvin 1872, Aaron 1740","presented":"Loreen 2220, Kelvin 1872, Aaron 1740","pipeline":"Loreen 2220, Harish 3600, Yaso 3600","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Nahar, Danial, nordaniah, fatimah","presented":"Nahar & Danial","pipeline":"Nahar family 6696 anp, Danial 1572 Anp","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":65.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"Andrew","presented":"Andrew 7,644","pipeline":"Faris 3600 , Kamarul Azhan 4560, Rizqi 2640","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":92.39,"d2":68.25}],"4":[]},"MAR":{"1":[{"agent":"Rod","type":"SALES","followUp":"Nur Iman","presented":"Nur Iman","pipeline":"Loreen 2220, Harish 3600, Yaso 3600","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Farihah, Syahida","presented":"","pipeline":"Nahar family 6696 anp,","tpcClosed":1576.0,"casesClosed":1,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"2026-06-03","d0":null,"d1":65.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"ZURINA 9344.60","presented":"ZURINA","pipeline":"Faris 3600 , Kamarul Azhan 4560, Rizqi 2640","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":92.0,"d2":68.0}],"2":[{"agent":"Rod","type":"SALES","followUp":"Loh Jun Poh, Syahir, Azril","presented":"Loh Jun Poh, Syahir, Azril","pipeline":"Loreen 2220, Harish 3600, Yaso 3600","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Dill YYM","presented":"Farihah 1296 anp","pipeline":"Nahar family 6696 anp,","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"2026-06-03","d0":null,"d1":65.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"Pita","presented":"Pita RM 2220","pipeline":"Faris 3600 , Kamarul Azhan 4560, Rizqi 2640","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"28/1/2026","d0":100.0,"d1":92.0,"d2":80.0}],"3":[{"agent":"Rod","type":"SALES","followUp":"Mark Tuen, Zui Mun, Erwanti, Loo Jun Poh","presented":"Mark Tuen, Zui Mun (3,000; 3,000), Erwanti, Loh Jun Poh","pipeline":"Mark Tuen 3000, Zui Mun 3000","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"26/12/2025","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Turaya, k Nor","presented":"irsalina 1310 anp","pipeline":"Farihah 1296 anp, my own case","tpcClosed":2028.0,"casesClosed":1,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"31/3/2026","d0":null,"d1":65.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"Fazlin 2640","presented":"","pipeline":"Faris 3600 , Kamarul Azhan 4560, Rizqi 2640, Pita 2200","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":92.0,"d2":80.0}],"4":[]},"APR":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"MAY":{"1":[{"agent":"Rod","type":"SALES","followUp":"Ainil Aznida, Siti","presented":"Ainil Aznida 2472, Siti 1968","pipeline":"Siti 1968, Mark 2880, Yaso 3600, Marsya baby 3000, Roopesha baby (follow up after born), Ainil Aznida 2472","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"salleh, nabilah baby","presented":"","pipeline":"Fariha 1902 anp","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":89.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"Iezary","presented":"Iezary 2880","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":76.0,"d2":80.0}],"2":[{"agent":"Rod","type":"SALES","followUp":"Ainil Aznida, Siti","presented":"Ainil Aznida 2472, Siti 1968","pipeline":"Siti 1968, Mark 2880, Yaso 3600, Marsya baby 3000, Roopesha baby (follow up after born), Ainil Aznida 2472","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":100.0,"d2":100.0},{"agent":"Sharifah","type":"SALES","followUp":"Rusni, Marisa","presented":"","pipeline":"Fariha 1902 anp, Salleh , Nabilah's baby","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":65.0,"d2":100.0},{"agent":"Fazlin","type":"SALES","followUp":"Iezary, SHAZWAN","presented":"Iezary 2880, Shazwan 3,300","pipeline":"Kamarul Azhan 4560, Rizqi 2640, Pita 2200, Amira 5520","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":100.0,"d1":76.0,"d2":80.0}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"JUN":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"JUL":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"AUG":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"SEP":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"OCT":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"NOV":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]},"DEC":{"1":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"2":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"3":[{"agent":"Rod","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":12000.0,"yearlyTarget":140000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Sharifah","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null},{"agent":"Fazlin","type":"SALES","followUp":"","presented":"","pipeline":"","tpcClosed":0,"casesClosed":0,"monthlyTarget":6000.0,"yearlyTarget":70000.0,"monthlyRec":1,"lastSalesDate":"","d0":null,"d1":null,"d2":null}],"4":[]}};
+
+// ===================== STATE =====================
+let userEntries = {};
+let unsubscribeEntries = null;
+let currentView = 'overview';
+
+const AGENT_COLORS = { Rod:'var(--rod)', Sharifah:'var(--sharifah)', Fazlin:'var(--fazlin)' };
+
+function agentColor(name) { return AGENT_COLORS[name] || 'var(--text3)'; }
+
+// Merge historical + user data
+function getData(month, week) {
+  const hist = (HISTORICAL[month] || {})[week] || [];
+  const user = (userEntries[month] || {})[week] || [];
+  return [...hist, ...user];
+}
+
+function getMonthData(month) {
+  const all = [];
+  for (let w = 1; w <= 4; w++) all.push(...getData(month, String(w)));
+  return all;
+}
+
+// ===================== NAV =====================
+function setView(v, el) {
+  currentView = v;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+// ===================== RENDER =====================
+function render() {
+  const month = document.getElementById('monthSel').value;
+  const week  = document.getElementById('weekSel').value;
+  const agent = document.getElementById('agentSel').value;
+
+  const weekEntries = getData(month, week).filter(e => !agent || e.agent === agent);
+  const monthEntries = getMonthData(month).filter(e => !agent || e.agent === agent);
+
+  // Stats
+  const totalTPC   = monthEntries.reduce((s,e) => s+(e.tpcClosed||0), 0);
+  const totalCases = monthEntries.reduce((s,e) => s+(e.casesClosed||0), 0);
+  const pipeline   = weekEntries.filter(e => e.pipeline).length;
+  const totalTarget= monthEntries.reduce((s,e)=> s+(e.monthlyTarget||0), 0);
+  const progress   = totalTarget > 0 ? Math.min(100, Math.round(totalTPC/totalTarget*100)) : 0;
+
+  const views = { overview: renderOverview, sales: renderSales, pipeline: renderPipeline, persistency: renderPersistency };
+  const tableHTML = (views[currentView] || renderOverview)(weekEntries);
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="stats-row">
+      <div class="stat-card c1">
+        <div class="stat-label">TPC Closed (Month)</div>
+        <div class="stat-val">RM ${totalTPC.toLocaleString()}</div>
+        <div class="stat-sub">vs target RM ${totalTarget.toLocaleString()}</div>
+      </div>
+      <div class="stat-card c2">
+        <div class="stat-label">Cases Closed</div>
+        <div class="stat-val">${totalCases}</div>
+        <div class="stat-sub">This month</div>
+      </div>
+      <div class="stat-card c3">
+        <div class="stat-label">Active Pipeline</div>
+        <div class="stat-val">${pipeline}</div>
+        <div class="stat-sub">Week ${week} entries</div>
+      </div>
+      <div class="stat-card c4">
+        <div class="stat-label">Target Progress</div>
+        <div class="stat-val">${progress}%</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn ${currentView==='overview'?'active':''}" onclick="setView('overview',this)">Overview</button>
+      <button class="tab-btn ${currentView==='sales'?'active':''}" onclick="setView('sales',this)">Sales Activity</button>
+      <button class="tab-btn ${currentView==='pipeline'?'active':''}" onclick="setView('pipeline',this)">Pipeline</button>
+      <button class="tab-btn ${currentView==='persistency'?'active':''}" onclick="setView('persistency',this)">Persistency</button>
+    </div>
+    ${tableHTML}
+  `;
+}
+
+function empty(cols) {
+  return `<tr><td colspan="${cols}" class="empty-state">No data for this selection</td></tr>`;
+}
+
+function renderOverview(entries) {
+  const rows = entries.length ? entries.map((e,i) => {
+    const prog = e.monthlyTarget > 0 ? Math.round((e.tpcClosed||0)/e.monthlyTarget*100) : 0;
+    const tag  = prog>=80?'tag-success':prog>=40?'tag-warn':'tag-danger';
+    return `<tr>
+      <td><div class="agent-name"><div class="agent-dot-sm" style="background:${agentColor(e.agent)}"></div>${e.agent}</div></td>
+      <td class="cell-long">${e.followUp||'—'}</td>
+      <td class="cell-long">${e.presented||'—'}</td>
+      <td>${e.casesClosed||0}</td>
+      <td class="mono">RM ${(e.tpcClosed||0).toLocaleString()}</td>
+      <td class="mono">RM ${(e.monthlyTarget||0).toLocaleString()}</td>
+      <td><span class="tag ${tag}">${prog}%</span></td>
+      <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick='showDetail(${JSON.stringify(e)})'>View</button></td>
+    </tr>`;
+  }).join('') : empty(8);
+
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Agent</th><th>Follow Up</th><th>Presented</th><th>Cases</th><th>TPC Closed</th><th>Monthly Target</th><th>Progress</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderSales(entries) {
+  const rows = entries.length ? entries.map(e => `<tr>
+    <td><div class="agent-name"><div class="agent-dot-sm" style="background:${agentColor(e.agent)}"></div>${e.agent}</div></td>
+    <td class="cell-long">${e.followUp||'—'}</td>
+    <td class="cell-long">${e.presented||'—'}</td>
+    <td>${e.lastSalesDate||'—'}</td>
+    <td class="mono">RM ${(e.monthlyTarget||0).toLocaleString()}</td>
+    <td class="mono">RM ${(e.yearlyTarget||0).toLocaleString()}</td>
+    <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick='showDetail(${JSON.stringify(e)})'>View</button></td>
+  </tr>`).join('') : empty(7);
+
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Agent</th><th>Follow Up</th><th>Presented</th><th>Last Sales Date</th><th>Monthly Target</th><th>Yearly Target</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderPipeline(entries) {
+  const rows = entries.filter(e=>e.pipeline).length ? entries.filter(e=>e.pipeline).map(e => `<tr>
+    <td><div class="agent-name"><div class="agent-dot-sm" style="background:${agentColor(e.agent)}"></div>${e.agent}</div></td>
+    <td>${e.pipeline}</td>
+    <td><span class="tag tag-warn">Active</span></td>
+    <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick='showDetail(${JSON.stringify(e)})'>View</button></td>
+  </tr>`).join('') : empty(4);
+
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Agent</th><th>Pipeline Opportunities</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderPersistency(entries) {
+  const hasData = entries.some(e => e.d0!=null||e.d1!=null||e.d2!=null);
+  const rows = hasData ? entries.filter(e=>e.d0!=null||e.d1!=null||e.d2!=null).map(e => {
+    const pc = v => v==null ? '—' : `<span style="color:${v>=80?'var(--accent2)':v>=60?'var(--warn)':'var(--danger)'}">${v}%</span>`;
+    return `<tr>
+      <td><div class="agent-name"><div class="agent-dot-sm" style="background:${agentColor(e.agent)}"></div>${e.agent}</div></td>
+      <td class="mono">${pc(e.d0)}</td>
+      <td class="mono">${pc(e.d1)}</td>
+      <td class="mono">${pc(e.d2)}</td>
+    </tr>`;
+  }).join('') : empty(4);
+
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Agent</th><th>D0 Persistency</th><th>D1 Persistency</th><th>D2 Persistency</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+// ===================== DETAIL MODAL =====================
+function showDetail(e) {
+  document.getElementById('detailTitle').textContent = `${e.agent} — Detail`;
+  const pc = v => v==null ? '—' : `${v}%`;
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><label>Agent</label><span style="color:${agentColor(e.agent)};font-weight:700">${e.agent}</span></div>
+      <div class="detail-item"><label>Last Sales Date</label><span>${e.lastSalesDate||'—'}</span></div>
+      <div class="detail-item"><label>TPC Closed</label><span class="mono">RM ${(e.tpcClosed||0).toLocaleString()}</span></div>
+      <div class="detail-item"><label>Cases Closed</label><span>${e.casesClosed||0}</span></div>
+      <div class="detail-item"><label>Monthly Target</label><span class="mono">RM ${(e.monthlyTarget||0).toLocaleString()}</span></div>
+      <div class="detail-item"><label>Yearly Target</label><span class="mono">RM ${(e.yearlyTarget||0).toLocaleString()}</span></div>
+      ${e.followUp ? `<div class="detail-item detail-full"><label>Follow Up Attempts</label><div class="detail-block">${e.followUp}</div></div>` : ''}
+      ${e.presented ? `<div class="detail-item detail-full"><label>Presented</label><div class="detail-block">${e.presented}</div></div>` : ''}
+      ${e.pipeline ? `<div class="detail-item detail-full"><label>Pipeline</label><div class="detail-block">${e.pipeline}</div></div>` : ''}
+    </div>
+    <div class="section-divider" style="margin:16px 0 12px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:12px">Persistency <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>
+    <div class="persist-row">
+      <div class="persist-item"><div class="p-label">D0</div><div class="p-val" style="color:${e.d0!=null&&e.d0>=80?'var(--accent2)':e.d0!=null&&e.d0>=60?'var(--warn)':'var(--danger)'}">${pc(e.d0)}</div></div>
+      <div class="persist-item"><div class="p-label">D1</div><div class="p-val" style="color:${e.d1!=null&&e.d1>=80?'var(--accent2)':e.d1!=null&&e.d1>=60?'var(--warn)':'var(--danger)'}">${pc(e.d1)}</div></div>
+      <div class="persist-item"><div class="p-label">D2</div><div class="p-val" style="color:${e.d2!=null&&e.d2>=80?'var(--accent2)':e.d2!=null&&e.d2>=60?'var(--warn)':'var(--danger)'}">${pc(e.d2)}</div></div>
+    </div>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+// ===================== NEW ENTRY =====================
+document.getElementById('eAgent').addEventListener('change', function() {
+  document.getElementById('newAgentWrap').style.display = this.value === '__new' ? 'flex' : 'none';
+});
+
+function openNewEntry() {
+  document.getElementById('entryModal').classList.add('open');
+}
+
+async function saveEntry() {
+  let agent = document.getElementById('eAgent').value;
+  if (!agent) { alert('Please select an agent'); return; }
+  if (agent === '__new') {
+    agent = document.getElementById('eNewAgent').value.trim();
+    if (!agent) { alert('Please enter agent name'); return; }
+  }
+
+  const month = document.getElementById('monthSel').value;
+  const week = document.getElementById('weekSel').value;
+
+  const entry = {
+    month,
+    week,
+    agent,
+    type: 'SALES',
+    followUp: document.getElementById('eFollowUp').value,
+    presented: document.getElementById('ePresented').value,
+    pipeline: document.getElementById('ePipeline').value,
+    tpcClosed: parseFloat(document.getElementById('eTpcClosed').value) || 0,
+    casesClosed: parseInt(document.getElementById('eCases').value) || 0,
+    monthlyTarget: parseFloat(document.getElementById('eMonthlyTarget').value) || 0,
+    yearlyTarget: parseFloat(document.getElementById('eYearlyTarget').value) || 0,
+    monthlyRec: parseInt(document.getElementById('eMonthlyRec').value) || 0,
+    lastSalesDate: document.getElementById('eLastSales').value,
+    d0: document.getElementById('eD0').value !== '' ? parseFloat(document.getElementById('eD0').value) : null,
+    d1: document.getElementById('eD1').value !== '' ? parseFloat(document.getElementById('eD1').value) : null,
+    d2: document.getElementById('eD2').value !== '' ? parseFloat(document.getElementById('eD2').value) : null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    await db.collection('entries').add(entry);
+    closeModal('entryModal');
+
+    ['eFollowUp','ePresented','ePipeline','eTpcClosed','eCases','eMonthlyTarget','eYearlyTarget','eMonthlyRec','eLastSales','eD0','eD1','eD2','eNewAgent'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('eAgent').value = '';
+  } catch (error) {
+    console.error(error);
+    alert('Failed to save entry.');
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ===================== INIT =====================
+document.getElementById('monthSel').value = 'MAY';
+loadRealtimeData();
+</script>
+</body>
+</html>
