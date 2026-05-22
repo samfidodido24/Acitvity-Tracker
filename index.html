@@ -445,16 +445,49 @@ const AGENT_COLORS = { Rod:'var(--rod)', Sharifah:'var(--sharifah)', Fazlin:'var
 
 function agentColor(name) { return AGENT_COLORS[name] || 'var(--text3)'; }
 
-// Merge historical + user data
-function getData(month, week) {
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Your Firebase Configuration (Pasted from your Firebase Console)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBistOd56-ZzeWzxOfwabkR0aZ5wTYVc1Y",
+    authDomain: "activity-tracker-2026-13815.firebaseapp.com",
+    projectId: "activity-tracker-2026-13815",
+    storageBucket: "activity-tracker-2026-13815.firebasestorage.app",
+    messagingSenderId: "388850377856",
+    appId: "1:388850377856:web:31ec7a7e88ddeb3a7df265"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+  
+  // Merge historical + user data
+// Get data directly from Firebase Firestore
+async function getData(month, week) {
   const hist = (HISTORICAL[month] || {})[week] || [];
-  const user = (userEntries[month] || {})[week] || [];
+  const user = [];
+  
+  try {
+    const snapshot = await db.collection('entries')
+      .where('month', '==', month)
+      .where('week', '==', week)
+      .get();
+    snapshot.forEach(doc => user.push({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.error("Error getting documents: ", err);
+  }
   return [...hist, ...user];
 }
 
-function getMonthData(month) {
+async function getMonthData(month) {
   const all = [];
-  for (let w = 1; w <= 4; w++) all.push(...getData(month, String(w)));
+  for (let w = 1; w <= 4; w++) {
+    const data = await getData(month, String(w));
+    all.push(...data);
+  }
   return all;
 }
 
@@ -467,14 +500,15 @@ function setView(v, el) {
 }
 
 // ===================== RENDER =====================
-function render() {
+// Update render to be asynchronous
+async function render() {
   const month = document.getElementById('monthSel').value;
   const week  = document.getElementById('weekSel').value;
   const agent = document.getElementById('agentSel').value;
-
-  const weekEntries = getData(month, week).filter(e => !agent || e.agent === agent);
-  const monthEntries = getMonthData(month).filter(e => !agent || e.agent === agent);
-
+  
+  // Wait for the data to come back from Firebase
+  const weekEntries = (await getData(month, week)).filter(e => !agent || e.agent === agent);
+  const monthEntries = (await getMonthData(month)).filter(e => !agent || e.agent === agent);
   // Stats
   const totalTPC   = monthEntries.reduce((s,e) => s+(e.tpcClosed||0), 0);
   const totalCases = monthEntries.reduce((s,e) => s+(e.casesClosed||0), 0);
